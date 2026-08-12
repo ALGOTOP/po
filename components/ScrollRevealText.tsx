@@ -53,7 +53,7 @@ function parseParagraphs(text: string): Word[][] {
 export default function ScrollRevealText({
   text,
   className,
-  durationMs = 650,
+  durationMs = 1200,
 }: ScrollRevealTextProps) {
   const paragraphs = useMemo(() => parseParagraphs(text), [text]);
 
@@ -122,18 +122,36 @@ export default function ScrollRevealText({
       (entries) => {
         entries.forEach((entry) => {
           const el = entry.target as HTMLParagraphElement;
-
           if (entry.isIntersecting) {
             el.dataset.revealed = "true";
-            return;
           }
+        });
+      },
+      {
+        threshold: 0,
+        // Trigger the reveal slightly before the paragraph is fully on
+        // screen ("just a bit before" it's reached).
+        rootMargin: "0px 0px -15% 0px",
+      }
+    );
 
-          // Not intersecting: only instantly hide when it exited via the
-          // BOTTOM edge (rect.top > 0) -- that means the user scrolled
-          // back up and the paragraph is retreating back down toward the
-          // hero. If it exited via the top (scrolled further down past
-          // it), leave it revealed.
-          if (entry.boundingClientRect.top > 0) {
+    // Separate observer, default rootMargin/threshold: isIntersecting only
+    // goes false once the paragraph has left the viewport COMPLETELY (both
+    // edges outside), not as soon as it starts exiting. Only hide when it
+    // went fully off-screen through the BOTTOM edge (top >= viewport height)
+    // -- that only happens when scrolling back up toward the hero. If it
+    // exited fully through the TOP (scrolled further down past it), leave
+    // it revealed.
+    const hideObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target as HTMLParagraphElement;
+          if (entry.isIntersecting) return;
+
+          const fullyBelowViewport =
+            entry.boundingClientRect.top >= window.innerHeight;
+
+          if (fullyBelowViewport) {
             el.classList.add(styles.noTransition);
             el.dataset.revealed = "false";
             // force reflow so the "no transition" hide applies instantly
@@ -144,17 +162,20 @@ export default function ScrollRevealText({
           }
         });
       },
-      {
-        threshold: 0,
-        rootMargin: "0px 0px -15% 0px",
-      }
+      { threshold: 0 }
     );
 
     paragraphElRefs.current.forEach((el) => {
-      if (el) observer.observe(el);
+      if (el) {
+        observer.observe(el);
+        hideObserver.observe(el);
+      }
     });
 
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      hideObserver.disconnect();
+    };
   }, [paragraphs]);
 
   return (

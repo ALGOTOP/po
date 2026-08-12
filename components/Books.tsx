@@ -223,7 +223,7 @@ export default function Books() {
       </div>
 
       <div className={styles.pagination}>
-        {Array.from({ length: 14 }).map((_, index) => {
+        {Array.from({ length: 5 }).map((_, index) => {
           const isActive = index === activeIndex;
 
           return (
@@ -234,13 +234,8 @@ export default function Books() {
               className={`${styles.dot} ${
                 isActive ? styles.activeDot : ""
               }`}
-              onClick={() => {
-                if (index < books.length) {
-                  scrollToBook(index);
-                }
-              }}
-              disabled={index >= books.length}
-            />
+              onClick={() => scrollToBook(index)}
+              />
           );
         })}
       </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { neueMontreal } from "@/lib/fonts";
 
 export const metadata: Metadata = {
   title: "Hero Reveal Effect",
@@ -13,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={neueMontreal.variable}>{children}</body>
     </html>
   );
 }

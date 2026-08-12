@@ -1,49 +1,72 @@
 .section {
+  width: 100%;
   background: #000000;
-  padding: clamp(120px, 18vh, 220px) 0 clamp(140px, 20vh, 240px);
-  /* Section height = however tall the big paragraph naturally renders.
-     That in-flow height IS the scroll distance the reveal scrubs across —
-     no sticky/pin trick needed, matching a normal (non-pinned) editorial block. */
+  padding-top: 42px;
+  padding-bottom: 80px;
+  padding-left: clamp(20px, 3.3vw, 38px);
+  padding-right: clamp(20px, 3.3vw, 38px);
 }
 
 .inner {
   width: 100%;
-  max-width: 1040px;
+  max-width: none;
   margin: 0;
-  padding: 0 clamp(24px, 6vw, 64px);
 }
 
 .paragraph {
-  font-family: "Inter", -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-neue-montreal), sans-serif;
   font-weight: 400;
-  font-size: clamp(1.75rem, 2.4vw, 2.5rem);
-  line-height: 1.3;
-  letter-spacing: -0.005em;
-  margin: 0 0 clamp(22px, 3vh, 36px);
-  color: #ffffff;
+  font-style: normal;
+  line-height: 1.205;
+  letter-spacing: -0.02em;
+  color: #f5f5f5;
+  margin: 0;
+
+  /* Mobile-first responsive scale -- see breakpoints below for
+     tablet / reference-desktop (1138px) / large-desktop values. */
+  font-size: clamp(25px, 7.5vw, 30px);
 }
 
-.paragraph:last-child {
-  margin-bottom: 0;
+.paragraph + .paragraph {
+  margin-top: 40px;
+}
+
+/* 480-767px */
+@media (min-width: 480px) {
+  .paragraph {
+    font-size: clamp(27px, 7vw, 34px);
+  }
+}
+
+/* 768-1023px (tablet) */
+@media (min-width: 768px) {
+  .paragraph {
+    font-size: clamp(32px, 4.2vw, 40px);
+  }
+}
+
+/* 1024-1439px -- reference desktop width (~1138px) targets exactly 42px */
+@media (min-width: 1024px) {
+  .paragraph {
+    font-size: 42px;
+  }
+}
+
+/* 1440px+ -- large desktop */
+@media (min-width: 1440px) {
+  .paragraph {
+    font-size: clamp(42px, 3vw, 48px);
+  }
 }
 
 .word {
-  color: rgba(255, 255, 255, var(--o, 0.15));
+  color: rgba(245, 245, 245, var(--o, 0.15));
   transition: color 90ms linear;
   white-space: pre-wrap;
 }
 
 .italic {
+  font-family: var(--font-neue-montreal), sans-serif;
+  font-weight: 400;
   font-style: italic;
-}
-
-@media (max-width: 640px) {
-  .inner {
-    width: 100%;
-    max-width: none;
-  }
-  .paragraph {
-    font-size: clamp(1.3rem, 6vw, 1.7rem);
-    line-height: 1.3;
-  }
 }

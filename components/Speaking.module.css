@@ -126,6 +126,12 @@
     transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* ADDED ONLY FOR SPACES IN THE HEADING */
+.headingSpace {
+  display: inline-block;
+  width: 0.28em;
+}
+
 .section[data-revealed="true"] .headingLetter {
   opacity: 1;
 

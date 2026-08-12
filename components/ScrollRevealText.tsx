@@ -6,33 +6,23 @@ import styles from "./ScrollRevealText.module.css";
 type ScrollRevealTextProps = {
   /**
    * The copy to render. Separate paragraphs with a blank line ("\n\n").
-   * Wrap a phrase in single asterisks — *like this* — to italicize it,
-   * matching the reference site's convention for names/publications.
+   * Wrap a phrase in single asterisks -- *like this* -- to italicize it.
    */
   text: string;
   className?: string;
-  /**
-   * How many "words wide" the light/dark transition band is.
-   * Smaller = sharper edge, larger = softer, slower fade. Default 4.
-   */
-  softness?: number;
-  /** Opacity of a word before it's been reached by the reveal. Default 0.15. */
-  dimOpacity?: number;
+  /** Total cascade duration per paragraph, ms. Kept under 700ms. Default 650. */
+  durationMs?: number;
 };
 
 type Word = {
   text: string;
   italic: boolean;
-  paragraphIndex: number;
 };
 
-/**
- * Splits "text" into paragraphs, then words, tracking which paragraph
- * each word belongs to and whether it was wrapped in *asterisks*.
- */
+/** Splits "text" into paragraphs, then words, tracking *italic* spans. */
 function parseParagraphs(text: string): Word[][] {
   const paragraphs = text.trim().split(/\n\s*\n/);
-  return paragraphs.map((paragraph, paragraphIndex) => {
+  return paragraphs.map((paragraph) => {
     const tokens = paragraph.trim().split(/\s+/);
     const words: Word[] = [];
     let italicOpen = false;
@@ -51,7 +41,7 @@ function parseParagraphs(text: string): Word[][] {
       }
 
       const isItalic = italicOpen || startsItalic;
-      words.push({ text: token, italic: isItalic, paragraphIndex });
+      words.push({ text: token, italic: isItalic });
 
       if (startsItalic && !endsItalic) italicOpen = true;
       if (endsItalic) italicOpen = false;
@@ -63,100 +53,138 @@ function parseParagraphs(text: string): Word[][] {
 export default function ScrollRevealText({
   text,
   className,
-  softness = 4,
-  dimOpacity = 0.15,
+  durationMs = 650,
 }: ScrollRevealTextProps) {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const wordRefs = useRef<HTMLSpanElement[]>([]);
-  wordRefs.current = [];
-
   const paragraphs = useMemo(() => parseParagraphs(text), [text]);
-  const wordCount = useMemo(
-    () => paragraphs.reduce((sum, p) => sum + p.length, 0),
-    [paragraphs]
-  );
 
+  const paragraphElRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const wordRefsByParagraph = useRef<HTMLSpanElement[][]>([]);
+
+  // --- Measure real rendered lines and assign each word a stagger delay ---
   useEffect(() => {
-    const section = sectionRef.current;
-    if (!section) return;
+    const assignLineDelays = () => {
+      wordRefsByParagraph.current.forEach((wordSpans) => {
+        if (!wordSpans || wordSpans.length === 0) return;
 
+        // Group words by their rendered top offset -> a visual line.
+        const tops: number[] = [];
+        wordSpans.forEach((el) => {
+          const top = Math.round(el.offsetTop);
+          if (!tops.includes(top)) tops.push(top);
+        });
+        tops.sort((a, b) => a - b);
+
+        const totalLines = tops.length;
+        const perWordDuration = Math.round(durationMs * 0.55); // each word's own fade
+        const maxStagger = durationMs - perWordDuration; // spread across lines
+
+        wordSpans.forEach((el) => {
+          const top = Math.round(el.offsetTop);
+          const lineIndex = tops.indexOf(top);
+          const delay =
+            totalLines <= 1
+              ? 0
+              : Math.round((lineIndex / (totalLines - 1)) * maxStagger);
+          el.style.setProperty("--delay", `${delay}ms`);
+          el.style.setProperty("--dur", `${perWordDuration}ms`);
+        });
+      });
+    };
+
+    assignLineDelays();
+
+    let resizeFrame: number;
+    const onResize = () => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(assignLineDelays);
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(resizeFrame);
+    };
+  }, [durationMs, paragraphs]);
+
+  // --- Reveal / instant-hide behavior on scroll direction ---
+  useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
     if (prefersReducedMotion) {
-      wordRefs.current.forEach((el) => el.style.setProperty("--o", "1"));
+      paragraphElRefs.current.forEach((el) => {
+        if (el) el.dataset.revealed = "true";
+      });
       return;
     }
 
-    let ticking = false;
-    let globalIndex = 0; // reused inside the rAF closure per frame
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target as HTMLParagraphElement;
 
-    const applyOpacities = () => {
-      ticking = false;
-      const rect = section.getBoundingClientRect();
-      const vh = window.innerHeight;
+          if (entry.isIntersecting) {
+            el.dataset.revealed = "true";
+            return;
+          }
 
-      // 0 when the section's top just enters the bottom of the viewport,
-      // 1 when the section's bottom has passed the top of the viewport.
-      const raw = (vh - rect.top) / (rect.height + vh);
-      const progress = Math.min(1, Math.max(0, raw));
-
-      const reveal = progress * wordCount;
-      const band = Math.max(1, softness);
-
-      for (let i = 0; i < wordRefs.current.length; i++) {
-        const t = reveal - i; // how far the "light" has moved past word i
-        const linear = Math.min(1, Math.max(0, (t + band / 2) / band));
-        // smoothstep easing for a soft, non-mechanical transition
-        const eased = linear * linear * (3 - 2 * linear);
-        const opacity = dimOpacity + (1 - dimOpacity) * eased;
-        wordRefs.current[i].style.setProperty("--o", opacity.toFixed(3));
+          // Not intersecting: only instantly hide when it exited via the
+          // BOTTOM edge (rect.top > 0) -- that means the user scrolled
+          // back up and the paragraph is retreating back down toward the
+          // hero. If it exited via the top (scrolled further down past
+          // it), leave it revealed.
+          if (entry.boundingClientRect.top > 0) {
+            el.classList.add(styles.noTransition);
+            el.dataset.revealed = "false";
+            // force reflow so the "no transition" hide applies instantly
+            void el.offsetHeight;
+            requestAnimationFrame(() => {
+              el.classList.remove(styles.noTransition);
+            });
+          }
+        });
+      },
+      {
+        threshold: 0,
+        rootMargin: "0px 0px -15% 0px",
       }
-    };
+    );
 
-    const onScroll = () => {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(applyOpacities);
-      }
-    };
+    paragraphElRefs.current.forEach((el) => {
+      if (el) observer.observe(el);
+    });
 
-    applyOpacities(); // set initial state on mount
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [wordCount, softness, dimOpacity]);
-
-  let runningIndex = 0;
+    return () => observer.disconnect();
+  }, [paragraphs]);
 
   return (
-    <section ref={sectionRef} className={`${styles.section} ${className ?? ""}`}>
+    <section className={`${styles.section} ${className ?? ""}`}>
       <div className={styles.inner}>
-        {paragraphs.map((words, pIdx) => (
-          <p key={pIdx} className={styles.paragraph}>
-            {words.map((w, wIdx) => {
-              const idx = runningIndex++;
-              return (
+        {paragraphs.map((words, pIdx) => {
+          wordRefsByParagraph.current[pIdx] = [];
+          return (
+            <p
+              key={pIdx}
+              ref={(el) => {
+                paragraphElRefs.current[pIdx] = el;
+              }}
+              className={styles.paragraph}
+              data-revealed="false"
+            >
+              {words.map((w, wIdx) => (
                 <span
                   key={wIdx}
                   ref={(el) => {
-                    if (el) wordRefs.current[idx] = el;
+                    if (el) wordRefsByParagraph.current[pIdx][wIdx] = el;
                   }}
                   className={`${styles.word} ${w.italic ? styles.italic : ""}`}
-                  style={{ ["--o" as string]: dimOpacity }}
                 >
                   {w.text}{" "}
                 </span>
-              );
-            })}
-          </p>
-        ))}
+              ))}
+            </p>
+          );
+        })}
       </div>
     </section>
   );

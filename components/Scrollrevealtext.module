@@ -1,0 +1,48 @@
+.section {
+  background: #000000;
+  padding: clamp(120px, 18vh, 220px) 0 clamp(140px, 20vh, 240px);
+  /* Section height = however tall the big paragraph naturally renders.
+     That in-flow height IS the scroll distance the reveal scrubs across —
+     no sticky/pin trick needed, matching a normal (non-pinned) editorial block. */
+}
+
+.inner {
+  width: 90vw;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 4vw, 64px);
+}
+
+.paragraph {
+  font-family: "Inter", -apple-system, "Segoe UI", sans-serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 4.2vw, 4.4rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 clamp(28px, 4vh, 56px);
+  color: #ffffff;
+}
+
+.paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.word {
+  color: rgba(255, 255, 255, var(--o, 0.15));
+  transition: color 90ms linear;
+  white-space: pre-wrap;
+}
+
+.italic {
+  font-style: italic;
+}
+
+@media (max-width: 640px) {
+  .inner {
+    width: 100%;
+  }
+  .paragraph {
+    font-size: clamp(1.5rem, 7vw, 2.4rem);
+    line-height: 1.2;
+  }
+}

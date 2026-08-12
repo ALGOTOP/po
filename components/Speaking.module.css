@@ -1,3 +1,4 @@
+```css
 .section {
   position: relative;
 
@@ -25,39 +26,34 @@
   position: absolute;
   inset: 0;
 
-  z-index: -3;
+  z-index: 0;
+
+  width: 100%;
+  height: 100%;
 
   background-image: url("/speaking-photo.jpg");
   background-repeat: no-repeat;
-
-  /*
-    The reference is a wide photographic composition.
-    Cover keeps the speaker on the right while allowing
-    the image to fill the entire speaking section.
-  */
   background-size: cover;
   background-position: center center;
 
   transform: scale(1.002);
+
+  pointer-events: none;
 }
 
 /* -------------------------------------------------
-   DARK REFERENCE OVERLAY
+   DARK IMAGE OVERLAY
 ------------------------------------------------- */
 
 .overlay {
   position: absolute;
   inset: 0;
 
-  z-index: -2;
+  z-index: 1;
 
   pointer-events: none;
 
   background:
-    /*
-      Heavy black at the bottom, matching the
-      fade visible underneath the audience.
-    */
     linear-gradient(
       to bottom,
       rgba(0, 0, 0, 0.06) 0%,
@@ -65,10 +61,6 @@
       rgba(0, 0, 0, 0.34) 68%,
       rgba(0, 0, 0, 0.94) 100%
     ),
-    /*
-      Darker left side so the white typography
-      stays extremely readable.
-    */
     linear-gradient(
       to right,
       rgba(0, 0, 0, 0.66) 0%,
@@ -84,7 +76,7 @@
 
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 
   min-height: 100vh;
 
@@ -128,8 +120,7 @@
 
   opacity: 0;
 
-  transform:
-    translate3d(0, 34px, 0);
+  transform: translate3d(0, 34px, 0);
 
   transition:
     opacity 700ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -139,8 +130,7 @@
 .section[data-revealed="true"] .headingLetter {
   opacity: 1;
 
-  transform:
-    translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* -------------------------------------------------
@@ -187,7 +177,7 @@
 }
 
 /* -------------------------------------------------
-   BUTTON
+   BOOK STEVEN BUTTON
 ------------------------------------------------- */
 
 .button {
@@ -205,9 +195,7 @@
 
   padding: 0 24px;
 
-  border:
-    1px solid
-    rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.55);
 
   border-radius: 999px;
 
@@ -239,8 +227,7 @@
 .button:hover {
   background: rgba(255, 255, 255, 0.08);
 
-  border-color:
-    rgba(255, 255, 255, 0.9);
+  border-color: rgba(255, 255, 255, 0.9);
 
   transform: translateY(-1px);
 }
@@ -266,7 +253,7 @@
 }
 
 /* -------------------------------------------------
-   FORCE HIDDEN STATE WHEN SCROLLING BACK
+   RESET REVEAL WHEN SCROLLING BACK
 ------------------------------------------------- */
 
 .noTransition .headingLetter,
@@ -401,3 +388,4 @@
     transition: none;
   }
 }
+```

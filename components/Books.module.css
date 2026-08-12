@@ -102,17 +102,12 @@
 
   width: 100%;
 
-  /*
-   * The reference has a roughly square dark
-   * presentation frame around each book.
-   */
   aspect-ratio: 1 / 1;
 
-  background: #292929;
+  background: transparent;
 
   overflow: hidden;
 }
-
 /*
  * The actual book image sits inside the dark
  * presentation frame.

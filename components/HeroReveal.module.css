@@ -1,3 +1,12 @@
+@font-face {
+  font-family: "Made Outer Sans";
+  src: url("/fonts/MADE%20Outer%20Sans%20Alt%20Regular%20PERSONAL%20USE.otf")
+    format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 .hero {
   position: relative;
   width: 100%;
@@ -22,18 +31,7 @@
   color: #ffffff;
   text-decoration: none;
 
-  /*
-    Made Outer Sans is not currently included
-    in the uploaded repository, so this uses
-    the closest available project font for now.
-    
-    Once Made Outer Sans is added to /public/fonts,
-    replace this with the corresponding font variable.
-  */
-  font-family:
-    var(--font-neue-montreal),
-    Arial,
-    sans-serif;
+  font-family: "Made Outer Sans", Arial, sans-serif;
 
   font-size: 34px;
   font-weight: 700;

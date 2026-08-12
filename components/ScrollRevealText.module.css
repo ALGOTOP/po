@@ -1,7 +1,7 @@
 .section {
   width: 100%;
   background: #000000;
-  padding-top: 42px;
+  padding-top: 60px;
   padding-bottom: 80px;
   padding-left: clamp(20px, 3.3vw, 38px);
   padding-right: clamp(20px, 3.3vw, 38px);
@@ -59,10 +59,29 @@
   }
 }
 
+/* --- Line-cascade reveal ---
+   Each word starts hidden. When its paragraph gets data-revealed="true"
+   (paragraph scrolled into view), every word fades to full opacity --
+   but with a per-line transition-delay (assigned in JS from measured
+   line position), so lines cascade top-to-bottom within under 700ms
+   total, rather than the whole paragraph appearing simultaneously. */
 .word {
-  color: rgba(245, 245, 245, var(--o, 0.15));
-  transition: color 90ms linear;
+  display: inline-block;
+  opacity: 0;
+  color: #f5f5f5;
   white-space: pre-wrap;
+  transition: opacity var(--dur, 350ms) ease-out;
+  transition-delay: var(--delay, 0ms);
+}
+
+.paragraph[data-revealed="true"] .word {
+  opacity: 1;
+}
+
+/* Applied briefly to force an instant, transition-less hide when
+   scrolling back up past a paragraph toward the hero. */
+.noTransition .word {
+  transition: none !important;
 }
 
 .italic {

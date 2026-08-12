@@ -2,7 +2,6 @@ import HeroReveal from "@/components/HeroReveal";
 import ScrollRevealText from "@/components/ScrollRevealText";
 import Credibility from "@/components/Credibility";
 import Books from "@/components/Books";
-import Testimonials from "@/components/Testimonials";
 
 const bioText = `Steven Kotler is a New York Times–bestselling author, award-winning journalist, and Distinguished Research Fellow at the Center for Complex Systems and Brain Sciences at Florida Atlantic University, where his work focuses on the neuroscience of flow, intuition, creativity, and human performance. He is the founder and executive director of the Flow Research Collective, a nonprofit research and training organization studying the brain at its best to heal it at its worst.
 
@@ -21,12 +20,6 @@ export default function Home() {
       <Credibility />
 
       <Books />
-
-      <Testimonials />
-
-      {/* Testimonials section comes above the future contact/form section */}
-
-      {/* Contact / Form will be added here */}
     </>
   );
 }

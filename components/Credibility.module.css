@@ -1,12 +1,12 @@
 .section {
+  --star-color: #e63878;
+  --star-empty: rgba(230, 56, 120, 0.24);
+
   width: 100%;
   background: #000000;
   color: #f5f5f5;
 
-  /* No top decorative line */
   border-top: none;
-
-  /* Subtle separation from the page below */
   border-bottom: 1px solid rgba(255, 255, 255, 0.045);
 
   padding: 88px 6.65vw 105px;
@@ -24,6 +24,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: clamp(55px, 8vw, 115px);
+
   align-items: start;
 }
 
@@ -70,6 +71,10 @@
   color: #f5f5f5;
 }
 
+/* =========================================================
+   SHARED LABELS
+   ========================================================= */
+
 .eyebrow {
   margin: 0 0 8px 0;
 
@@ -96,7 +101,7 @@
 }
 
 /* =========================================================
-   AMAZON
+   AMAZON STARS
    ========================================================= */
 
 .stars {
@@ -120,15 +125,9 @@
   flex: 0 0 22px;
 }
 
-/*
-  Amazon-style warm star color, intentionally slightly
-  darker/less saturated than the brightest Amazon rating
-  treatment.
-*/
-:global(:root) {
-  --star-color: #e63878;
-  --star-empty: rgba(230, 56, 120, 0.24);
-}
+/* =========================================================
+   NUMBERS
+   ========================================================= */
 
 .bigStat {
   display: block;
@@ -144,12 +143,7 @@
   color: #f5f5f5;
 }
 
-/*
-  The Amazon number should feel like a statistic rather
-  than another huge headline. Keeping it in the same
-  medium visual range as the other columns makes the
-  three blocks feel balanced.
-*/
+/* Amazon 4.5 */
 .item:nth-child(2) .bigStat {
   font-size: clamp(30px, 2.7vw, 38px);
   letter-spacing: -0.035em;
@@ -179,6 +173,7 @@
   top: -1px;
 }
 
+/* Pink line underneath 2,000+ */
 .rule {
   width: 40px;
   height: 2px;
@@ -189,7 +184,7 @@
 }
 
 /* =========================================================
-   DESKTOP REFINEMENT
+   LARGE DESKTOP
    ========================================================= */
 
 @media (min-width: 1100px) {
@@ -219,6 +214,7 @@
   .badge {
     width: 76px;
     height: 76px;
+
     margin-bottom: 24px;
   }
 
@@ -252,6 +248,7 @@
   .badge {
     width: 78px;
     height: 78px;
+
     margin-bottom: 23px;
   }
 
@@ -266,6 +263,7 @@
   .star {
     width: 21px;
     height: 21px;
+
     flex-basis: 21px;
   }
 

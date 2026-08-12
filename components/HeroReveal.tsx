@@ -39,6 +39,11 @@ export default function HeroReveal({
       >
         EA
       </Link>
+
+      <div className={styles.heroRole} aria-label="Romance Ghostwriter">
+        <span>ROMANCE</span>
+        <span>GHOSTWRITER</span>
+      </div>
     </div>
   );
 }

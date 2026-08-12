@@ -1,91 +1,212 @@
-.section {
-  width: 100%;
-  background: #000000;
-  padding-top: 60px;
-  padding-bottom: 80px;
-  padding-left: clamp(20px, 3.3vw, 38px);
-  padding-right: clamp(20px, 3.3vw, 38px);
+"use client";
+
+import { useEffect, useMemo, useRef } from "react";
+import styles from "./ScrollRevealText.module.css";
+
+type ScrollRevealTextProps = {
+  /**
+   * The copy to render. Separate paragraphs with a blank line ("\n\n").
+   * Wrap a phrase in single asterisks -- *like this* -- to italicize it.
+   */
+  text: string;
+  className?: string;
+  /** Total cascade duration per paragraph, ms. Kept under 700ms. Default 650. */
+  durationMs?: number;
+};
+
+type Word = {
+  text: string;
+  italic: boolean;
+};
+
+/** Splits "text" into paragraphs, then words, tracking *italic* spans. */
+function parseParagraphs(text: string): Word[][] {
+  const paragraphs = text.trim().split(/\n\s*\n/);
+  return paragraphs.map((paragraph) => {
+    const tokens = paragraph.trim().split(/\s+/);
+    const words: Word[] = [];
+    let italicOpen = false;
+    for (const rawToken of tokens) {
+      let token = rawToken;
+      let startsItalic = false;
+      let endsItalic = false;
+
+      if (token.startsWith("*")) {
+        startsItalic = true;
+        token = token.slice(1);
+      }
+      if (token.endsWith("*") && token.length > 1) {
+        endsItalic = true;
+        token = token.slice(0, -1);
+      }
+
+      const isItalic = italicOpen || startsItalic;
+      words.push({ text: token, italic: isItalic });
+
+      if (startsItalic && !endsItalic) italicOpen = true;
+      if (endsItalic) italicOpen = false;
+    }
+    return words;
+  });
 }
 
-.inner {
-  width: 100%;
-  max-width: 1100px;
-  margin: 0;
-}
+export default function ScrollRevealText({
+  text,
+  className,
+  durationMs = 1200,
+}: ScrollRevealTextProps) {
+  const paragraphs = useMemo(() => parseParagraphs(text), [text]);
 
-.paragraph {
-  font-family: var(--font-neue-montreal), sans-serif;
-  font-weight: 400;
-  font-style: normal;
-  line-height: 1.205;
-  letter-spacing: -0.02em;
-  color: #f5f5f5;
-  margin: 0;
+  const paragraphElRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const wordRefsByParagraph = useRef<HTMLSpanElement[][]>([]);
 
-  /* Mobile-first responsive scale -- see breakpoints below for
-     tablet / reference-desktop (1138px) / large-desktop values. */
-  font-size: clamp(25px, 7.5vw, 30px);
-}
+  // --- Measure real rendered lines and assign each word a stagger delay ---
+  useEffect(() => {
+    const assignLineDelays = () => {
+      wordRefsByParagraph.current.forEach((wordSpans) => {
+        if (!wordSpans || wordSpans.length === 0) return;
 
-.paragraph + .paragraph {
-  margin-top: 40px;
-}
+        // Group words by their rendered top offset -> a visual line.
+        const tops: number[] = [];
+        wordSpans.forEach((el) => {
+          const top = Math.round(el.offsetTop);
+          if (!tops.includes(top)) tops.push(top);
+        });
+        tops.sort((a, b) => a - b);
 
-/* 480-767px */
-@media (min-width: 480px) {
-  .paragraph {
-    font-size: clamp(27px, 7vw, 34px);
-  }
-}
+        const totalLines = tops.length;
+        const perWordDuration = Math.round(durationMs * 0.55); // each word's own fade
+        const maxStagger = durationMs - perWordDuration; // spread across lines
 
-/* 768-1023px (tablet) */
-@media (min-width: 768px) {
-  .paragraph {
-    font-size: clamp(32px, 4.2vw, 40px);
-  }
-}
+        wordSpans.forEach((el) => {
+          const top = Math.round(el.offsetTop);
+          const lineIndex = tops.indexOf(top);
+          const delay =
+            totalLines <= 1
+              ? 0
+              : Math.round((lineIndex / (totalLines - 1)) * maxStagger);
+          el.style.setProperty("--delay", `${delay}ms`);
+          el.style.setProperty("--dur", `${perWordDuration}ms`);
+        });
+      });
+    };
 
-/* 1024-1439px -- reference desktop width (~1138px) targets exactly 42px */
-@media (min-width: 1024px) {
-  .paragraph {
-    font-size: 42px;
-  }
-}
+    assignLineDelays();
 
-/* 1440px+ -- large desktop */
-@media (min-width: 1440px) {
-  .paragraph {
-    font-size: clamp(40px, 2vw, 44px);
-  }
-}
+    let resizeFrame: number;
+    const onResize = () => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(assignLineDelays);
+    };
+    window.addEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      cancelAnimationFrame(resizeFrame);
+    };
+  }, [durationMs, paragraphs]);
 
-/* --- Line-cascade reveal ---
-   Each word starts hidden. When its paragraph gets data-revealed="true"
-   (paragraph scrolled into view), every word fades to full opacity --
-   but with a per-line transition-delay (assigned in JS from measured
-   line position), so lines cascade top-to-bottom within under 700ms
-   total, rather than the whole paragraph appearing simultaneously. */
-.word {
-  display: inline-block;
-  opacity: 0;
-  color: #f5f5f5;
-  white-space: pre-wrap;
-  transition: opacity var(--dur, 350ms) ease-out;
-  transition-delay: var(--delay, 0ms);
-}
+  // --- Reveal / instant-hide behavior on scroll direction ---
+  useEffect(() => {
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
 
-.paragraph[data-revealed="true"] .word {
-  opacity: 1;
-}
+    if (prefersReducedMotion) {
+      paragraphElRefs.current.forEach((el) => {
+        if (el) el.dataset.revealed = "true";
+      });
+      return;
+    }
 
-/* Applied briefly to force an instant, transition-less hide when
-   scrolling back up past a paragraph toward the hero. */
-.noTransition .word {
-  transition: none !important;
-}
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target as HTMLParagraphElement;
+          if (entry.isIntersecting) {
+            el.dataset.revealed = "true";
+          }
+        });
+      },
+      {
+        threshold: 0,
+        // Trigger the reveal slightly before the paragraph is fully on
+        // screen ("just a bit before" it's reached).
+        rootMargin: "0px 0px -15% 0px",
+      }
+    );
 
-.italic {
-  font-family: var(--font-neue-montreal), sans-serif;
-  font-weight: 400;
-  font-style: italic;
+    // Separate observer, default rootMargin/threshold: isIntersecting only
+    // goes false once the paragraph has left the viewport COMPLETELY (both
+    // edges outside), not as soon as it starts exiting. Only hide when it
+    // went fully off-screen through the BOTTOM edge (top >= viewport height)
+    // -- that only happens when scrolling back up toward the hero. If it
+    // exited fully through the TOP (scrolled further down past it), leave
+    // it revealed.
+    const hideObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const el = entry.target as HTMLParagraphElement;
+          if (entry.isIntersecting) return;
+
+          const fullyBelowViewport =
+            entry.boundingClientRect.top >= window.innerHeight;
+
+          if (fullyBelowViewport) {
+            el.classList.add(styles.noTransition);
+            el.dataset.revealed = "false";
+            // force reflow so the "no transition" hide applies instantly
+            void el.offsetHeight;
+            requestAnimationFrame(() => {
+              el.classList.remove(styles.noTransition);
+            });
+          }
+        });
+      },
+      { threshold: 0 }
+    );
+
+    paragraphElRefs.current.forEach((el) => {
+      if (el) {
+        observer.observe(el);
+        hideObserver.observe(el);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+      hideObserver.disconnect();
+    };
+  }, [paragraphs]);
+
+  return (
+    <section className={`${styles.section} ${className ?? ""}`}>
+      <div className={styles.inner}>
+        {paragraphs.map((words, pIdx) => {
+          wordRefsByParagraph.current[pIdx] = [];
+          return (
+            <p
+              key={pIdx}
+              ref={(el) => {
+                paragraphElRefs.current[pIdx] = el;
+              }}
+              className={styles.paragraph}
+              data-revealed="false"
+            >
+              {words.map((w, wIdx) => (
+                <span
+                  key={wIdx}
+                  ref={(el) => {
+                    if (el) wordRefsByParagraph.current[pIdx][wIdx] = el;
+                  }}
+                  className={`${styles.word} ${w.italic ? styles.italic : ""}`}
+                >
+                  {w.text}{" "}
+                </span>
+              ))}
+            </p>
+          );
+        })}
+      </div>
+    </section>
+  );
 }

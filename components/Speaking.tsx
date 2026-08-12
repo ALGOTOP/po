@@ -4,8 +4,7 @@ import { useEffect, useRef } from "react";
 import styles from "./Speaking.module.css";
 
 const speakingText =
-  "Steven Kotler speaks on the science and practice of peak performance, creativity, flow, artificial intelligence, emerging technology, and what it takes to thrive in an accelerating world. Equal parts storyteller, scientist, and journalist, his talks blend neuroscience, applicable insight, and hard-won lessons gathered from decades spent studying human performance at the edge of possibility. Whether speaking to Fortune 500 companies, founders, elite military organizations, or global leadership teams, Steven leaves audiences stunned by their own potential, armed with tools, brimming with questions, and ready to meet a future arriving faster than anyone expected.";
-
+  "Eman Ali is a professional ghostwriter specializing in contemporary romance, historical romance, and historical fiction. She works with publishers, packagers, serialized fiction platforms, and authors who need a reliable long-form writing partner behind the scenes. Her work spans everything from emotionally driven contemporary stories to richly detailed historical worlds and fast-moving serialized fiction, always shaped around the brief, voice, and audience of the project. With years of experience delivering complete manuscripts under tight creative and commercial requirements, Eman brings the craft, consistency, and range needed to take a story from an initial idea to a finished book.";
 function splitWords(text: string) {
   return text.split(/\s+/);
 }
@@ -97,7 +96,7 @@ export default function Speaking() {
           id="speaking-title"
           className={styles.heading}
         >
-          {"SPEAKING".split("").map((letter, index) => (
+          {"WORK WITH EMAN".split("").map((letter, index) => (
             <span
               key={`${letter}-${index}`}
               className={styles.headingLetter}
@@ -132,7 +131,7 @@ export default function Speaking() {
           href="#contact"
           className={styles.button}
         >
-          <span>Book Steven</span>
+          <span>Contact Eman</span>
 
           <svg
             className={styles.buttonArrow}

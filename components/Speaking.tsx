@@ -5,6 +5,7 @@ import styles from "./Speaking.module.css";
 
 const speakingText =
   "Eman Ali is a professional ghostwriter specializing in contemporary romance, historical romance, and historical fiction. She works with publishers, packagers, serialized fiction platforms, and authors who need a reliable long-form writing partner behind the scenes. Her work spans everything from emotionally driven contemporary stories to richly detailed historical worlds and fast-moving serialized fiction, always shaped around the brief, voice, and audience of the project. With years of experience delivering complete manuscripts under tight creative and commercial requirements, Eman brings the craft, consistency, and range needed to take a story from an initial idea to a finished book.";
+
 function splitWords(text: string) {
   return text.split(/\s+/);
 }
@@ -99,12 +100,14 @@ export default function Speaking() {
           {"WORK WITH EMAN".split("").map((letter, index) => (
             <span
               key={`${letter}-${index}`}
-              className={styles.headingLetter}
+              className={`${styles.headingLetter} ${
+                letter === " " ? styles.headingSpace : ""
+              }`}
               style={{
                 transitionDelay: `${index * 28}ms`,
               }}
             >
-              {letter}
+              {letter === " " ? "\u00A0" : letter}
             </span>
           ))}
         </h2>

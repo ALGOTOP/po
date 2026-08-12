@@ -1,7 +1,7 @@
 .section {
   width: 100%;
   background: #000000;
-  padding-top: 60px;
+  padding-top: 160px;
   padding-bottom: 80px;
   padding-left: clamp(20px, 3.3vw, 38px);
   padding-right: clamp(20px, 3.3vw, 38px);
@@ -21,6 +21,13 @@
   letter-spacing: -0.02em;
   color: #f5f5f5;
   margin: 0;
+
+  /* Without these, the same font-weight 400 can render visibly heavier
+     in some browsers -- this is what keeps it looking as thin/light as
+     the reference instead of appearing bold. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 
   /* Mobile-first responsive scale -- see breakpoints below for
      tablet / reference-desktop (1138px) / large-desktop values. */

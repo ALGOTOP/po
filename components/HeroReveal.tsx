@@ -13,6 +13,7 @@ type HeroRevealProps = {
  * 1. A small centered frame appears.
  * 2. The image wipes into view bottom-to-top inside that frame.
  * 3. The frame smoothly expands to fill the screen.
+ * 4. EA fades in after the expansion is complete and functions as the home button.
  */
 export default function HeroReveal({
   src = "/hero-photo.jpg",
@@ -20,15 +21,6 @@ export default function HeroReveal({
 }: HeroRevealProps) {
   return (
     <div className={styles.hero}>
-      {/* EA home button */}
-      <Link
-        href="/"
-        className={styles.logo}
-        aria-label="Eman Ali — Home"
-      >
-        EA
-      </Link>
-
       <div className={styles.heroMedia}>
         <Image
           src={src}
@@ -39,6 +31,14 @@ export default function HeroReveal({
           className={styles.heroImage}
         />
       </div>
+
+      <Link
+        href="/"
+        className={styles.logo}
+        aria-label="Eman Ali — Home"
+      >
+        EA
+      </Link>
     </div>
   );
 }

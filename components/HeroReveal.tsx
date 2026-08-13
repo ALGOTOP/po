@@ -1,16 +1,72 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import styles from "./HeroReveal.module.css";
 
 type HeroRevealProps = {
+  /** Path to the image in /public, e.g. "/hero-photo.jpg" */
   src?: string;
   alt?: string;
 };
+
+const menuItems = [
+  {
+    label: "Home",
+    href: "/",
+  },
+  {
+    label: "About",
+    href: "#about",
+  },
+  {
+    label: "Books",
+    href: "#books",
+  },
+  {
+    label: "Work",
+    href: "#work",
+  },
+];
 
 export default function HeroReveal({
   src = "/hero-photo.jpg",
   alt = "",
 }: HeroRevealProps) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) {
+      document.body.style.overflow = "";
+      return;
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setMenuOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   return (
     <div className={styles.hero}>
       <div className={styles.heroMedia}>
@@ -24,6 +80,7 @@ export default function HeroReveal({
         />
       </div>
 
+      {/* EA HOME BUTTON */}
       <Link
         href="/"
         className={styles.logo}
@@ -32,17 +89,79 @@ export default function HeroReveal({
         EA
       </Link>
 
-      <div
-        className={styles.heroRole}
-        aria-label="Romance Ghostwriter"
+      {/* MENU BUTTON */}
+      <button
+        type="button"
+        className={`${styles.menuButton} ${
+          menuOpen ? styles.menuButtonOpen : ""
+        }`}
+        onClick={() => setMenuOpen((open) => !open)}
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        aria-expanded={menuOpen}
+        aria-controls="site-navigation"
       >
-        <span>ROMANCE</span>
-        <span>GHOSTWRITER</span>
-      </div>
+        <span className={styles.menuIcon} aria-hidden="true">
+          <span />
+          <span />
+        </span>
 
-      <div className={styles.heroName} aria-label="Eman Ali">
-        EMAN ALI
-      </div>
+        <span className={styles.menuLabel}>
+          {menuOpen ? "CLOSE" : "MENU"}
+        </span>
+      </button>
+
+      {/* MENU BACKDROP */}
+      <button
+        type="button"
+        className={`${styles.menuBackdrop} ${
+          menuOpen ? styles.menuBackdropVisible : ""
+        }`}
+        onClick={closeMenu}
+        aria-label="Close menu"
+        tabIndex={menuOpen ? 0 : -1}
+      />
+
+      {/* MENU DRAWER */}
+      <aside
+        id="site-navigation"
+        className={`${styles.menuDrawer} ${
+          menuOpen ? styles.menuDrawerOpen : ""
+        }`}
+        aria-hidden={!menuOpen}
+      >
+        <div className={styles.drawerInner}>
+          <nav
+            className={styles.drawerNavigation}
+            aria-label="Main navigation"
+          >
+            {menuItems.map((item, index) => (
+              <Link
+                key={item.label}
+                href={item.href}
+                className={styles.drawerLink}
+                style={
+                  {
+                    "--menu-index": index,
+                  } as React.CSSProperties
+                }
+                tabIndex={menuOpen ? 0 : -1}
+                onClick={closeMenu}
+              >
+                <span className={styles.drawerLinkText}>
+                  {item.label}
+                </span>
+
+                <span
+                  className={styles.drawerArrow}
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+              </Link>
+            ))}
+          </nav>
+        </div>
+      </aside>
     </div>
   );
 }

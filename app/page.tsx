@@ -1,4 +1,3 @@
-import SmoothScroll from "@/components/SmoothScroll";
 import HeroReveal from "@/components/HeroReveal";
 import ScrollRevealText from "@/components/ScrollRevealText";
 import Credibility from "@/components/Credibility";
@@ -14,8 +13,6 @@ That work now totals more than a hundred and ten full-length books and upward of
 export default function Home() {
   return (
     <>
-      <SmoothScroll />
-
       <HeroReveal
         src="/hero-photo.jpg"
         alt=""

@@ -11,7 +11,7 @@
   position: relative;
   width: 100%;
   height: 100vh;
-  overflow: hidden;
+  overflow: visible;
   background: #000000;
 }
 
@@ -185,19 +185,23 @@
 
   display: block;
 
-  width: 52px;
+  width: auto;
+  min-width: 58px;
+
   height: 25px;
 
   overflow: hidden;
 
   line-height: 25px;
+
+  flex: 0 0 auto;
 }
 
 .menuLabelTrack {
   display: flex;
   flex-direction: column;
 
-  width: 100%;
+  width: max-content;
 
   transform: translateY(0);
 
@@ -208,7 +212,8 @@
 .menuLabelItem {
   display: block;
 
-  width: 100%;
+  width: max-content;
+
   height: 25px;
 
   flex: 0 0 25px;
@@ -318,9 +323,11 @@
   min-height: 100%;
 
   padding:
-    150px
-    64px
-    64px;
+    120px
+    28px
+    40px;
+
+  overflow: visible;
 }
 
 /* -------------------------------------------------
@@ -341,8 +348,7 @@
 .drawerLink {
   position: relative;
 
-  display: flex;
-  align-items: center;
+  display: block;
 
   width: 100%;
 
@@ -354,15 +360,9 @@
 
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 
-  font-family: "Made Outer Sans", sans-serif;
+  font-family: "Made Outer Sans", Arial, sans-serif;
 
-  /*
-    FIX:
-    The previous 6vw sizing was based on the viewport rather than
-    the actual drawer width. On narrower screens, long words such
-    as ABOUT / BOOKS could extend beyond the usable content area.
-  */
-  font-size: clamp(44px, 5.5vw, 76px);
+  font-size: clamp(48px, 5vw, 76px);
 
   font-weight: 400;
 
@@ -370,18 +370,9 @@
 
   letter-spacing: -0.045em;
 
-  /*
-    Prevent the browser from wrapping the navigation labels.
-    The text itself is now allowed to extend naturally.
-  */
   white-space: nowrap;
 
-  /*
-    Important:
-    Do NOT reserve horizontal space for the arrow here.
-    The arrow is absolutely positioned below.
-  */
-  padding-right: 0;
+  overflow: visible;
 
   opacity: 0;
 
@@ -411,55 +402,29 @@
   padding-left: 12px;
 }
 
-/* -------------------------------------------------
-   DRAWER LINK TEXT
-------------------------------------------------- */
-
 .drawerLinkText {
-  display: block;
+  display: inline-block;
 
-  /*
-    Prevent flexbox from shrinking the actual word.
-    This is important for large typography.
-  */
-  flex: 0 0 auto;
-
-  /*
-    Make the intrinsic width of the word respected.
-  */
+  width: max-content;
   min-width: max-content;
 
-  /*
-    Do not clip the glyphs.
-  */
+  white-space: nowrap;
+
   overflow: visible;
 
-  /*
-    Small vertical breathing room prevents the font's
-    ascenders/descenders from touching the line box.
-  */
   padding-top: 3px;
   padding-bottom: 3px;
 }
 
-/* -------------------------------------------------
-   DRAWER ARROW
-------------------------------------------------- */
-
 .drawerArrow {
   position: absolute;
 
-  /*
-    Position the arrow independently from the text.
-    This means it no longer consumes horizontal flex space.
-  */
   right: 0;
-
   top: 50%;
 
   display: inline-block;
 
-  margin-left: 0;
+  margin: 0;
 
   color: #ffffff;
 
@@ -475,7 +440,9 @@
 
   opacity: 0;
 
-  transform: translateY(-50%) translateX(-10px);
+  transform:
+    translateY(-50%)
+    translateX(-10px);
 
   transition:
     opacity 220ms ease,
@@ -485,7 +452,9 @@
 .drawerLink:hover .drawerArrow {
   opacity: 1;
 
-  transform: translateY(-50%) translateX(0);
+  transform:
+    translateY(-50%)
+    translateX(0);
 }
 
 /* -------------------------------------------------
@@ -773,13 +742,13 @@
   .drawerLink {
     padding: 18px 0;
 
-    /*
-      On phones, use the drawer width as the limiting factor
-      rather than the desktop viewport-based sizing.
-    */
-    font-size: clamp(44px, 13vw, 52px);
+    font-size: clamp(42px, 11.5vw, 58px);
 
     line-height: 1.08;
+
+    white-space: nowrap;
+
+    overflow: visible;
   }
 
   .drawerArrow {

@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import styles from "./HeroReveal.module.css";
 
 type HeroRevealProps = {
-  /** Path to the image in /public, e.g. "/hero-photo.jpg" */
   src?: string;
   alt?: string;
 };
@@ -106,7 +105,10 @@ export default function HeroReveal({
         </span>
 
         <span className={styles.menuLabel}>
-          {menuOpen ? "CLOSE" : "MENU"}
+          <span className={styles.menuLabelTrack}>
+            <span className={styles.menuLabelItem}>MENU</span>
+            <span className={styles.menuLabelItem}>MENU</span>
+          </span>
         </span>
       </button>
 
@@ -162,6 +164,20 @@ export default function HeroReveal({
           </nav>
         </div>
       </aside>
+
+      {/* ROLE TEXT */}
+      <div
+        className={styles.heroRole}
+        aria-label="Romance Ghostwriter"
+      >
+        <span>ROMANCE</span>
+        <span>GHOSTWRITER</span>
+      </div>
+
+      {/* LARGE NAME */}
+      <div className={styles.heroName} aria-label="Eman Ali">
+        EMAN ALI
+      </div>
     </div>
   );
 }

@@ -14,21 +14,21 @@ type Testimonial = {
 const testimonials: Testimonial[] = [
   {
     review:
-      "It’s difficult to think of a writer more invigorating and tuned-in than Kotler. Tomorrowland is like taking a shot of caffeine. It allows you to see into the future and to realize that you’re already there.",
+      "It’s difficult to think of a writer more invigorating and tuned-in than her. Tomorrowland is like taking a shot of caffeine. It allows you to see into the future and to realize that you’re already there.",
     name: "ALEX MORGAN",
     role: "Author, researcher and futurist",
     image: "/testimonials/profile-1.svg",
   },
   {
     review:
-      "Kotler does a masterful job of explaining why we are at the start of a new era of radically increasing standards of living throughout the world. This is essential reading for anyone looking for a better tomorrow.",
+      "she does a masterful job of explaining why we are at the start of a new era of radically increasing standards of living throughout the world. This is essential reading for anyone looking for a better tomorrow.",
     name: "MICHAEL CARTER",
     role: "Founder and technology entrepreneur",
     image: "/testimonials/profile-2.svg",
   },
   {
     review:
-      "Every coach in America should know this stuff. Kotler has a rare ability to turn complicated ideas about human performance into something practical and exciting.",
+      "Every coach in the world should know this stuff. eman has a rare ability to turn complicated ideas about human performance into something practical and exciting.",
     name: "JORDAN LEE",
     role: "Performance coach and author",
     image: "/testimonials/profile-3.svg",
@@ -42,7 +42,7 @@ const testimonials: Testimonial[] = [
   },
   {
     review:
-      "Few writers can make emerging science feel this immediate. The work is ambitious, optimistic and grounded in questions that matter right now.",
+      "Few writers can make emerging stories feel this immediate. The work is ambitious, optimistic and grounded in questions that matter right now.",
     name: "SAM BROOKS",
     role: "Creative director and speaker",
     image: "/testimonials/profile-5.svg",

@@ -131,6 +131,16 @@ export default function HeroReveal({
         }`}
         aria-hidden={!menuOpen}
       >
+        <button
+          type="button"
+          className={styles.drawerClose}
+          onClick={closeMenu}
+          aria-label="Close menu"
+          tabIndex={menuOpen ? 0 : -1}
+        >
+          <span className={styles.drawerCloseIcon} aria-hidden="true" />
+        </button>
+
         <div className={styles.drawerInner}>
           <nav
             className={styles.drawerNavigation}

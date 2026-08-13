@@ -343,7 +343,6 @@
 
   display: flex;
   align-items: center;
-  justify-content: space-between;
 
   width: 100%;
 
@@ -357,12 +356,32 @@
 
   font-family: "Made Outer Sans", sans-serif;
 
-  font-size: clamp(48px, 6vw, 76px);
+  /*
+    FIX:
+    The previous 6vw sizing was based on the viewport rather than
+    the actual drawer width. On narrower screens, long words such
+    as ABOUT / BOOKS could extend beyond the usable content area.
+  */
+  font-size: clamp(44px, 5.5vw, 76px);
+
   font-weight: 400;
 
   line-height: 1.08;
 
   letter-spacing: -0.045em;
+
+  /*
+    Prevent the browser from wrapping the navigation labels.
+    The text itself is now allowed to extend naturally.
+  */
+  white-space: nowrap;
+
+  /*
+    Important:
+    Do NOT reserve horizontal space for the arrow here.
+    The arrow is absolutely positioned below.
+  */
+  padding-right: 0;
 
   opacity: 0;
 
@@ -392,19 +411,55 @@
   padding-left: 12px;
 }
 
-.drawerLinkText {
-  display: inline-block;
+/* -------------------------------------------------
+   DRAWER LINK TEXT
+------------------------------------------------- */
 
+.drawerLinkText {
+  display: block;
+
+  /*
+    Prevent flexbox from shrinking the actual word.
+    This is important for large typography.
+  */
+  flex: 0 0 auto;
+
+  /*
+    Make the intrinsic width of the word respected.
+  */
+  min-width: max-content;
+
+  /*
+    Do not clip the glyphs.
+  */
   overflow: visible;
 
+  /*
+    Small vertical breathing room prevents the font's
+    ascenders/descenders from touching the line box.
+  */
   padding-top: 3px;
   padding-bottom: 3px;
 }
 
+/* -------------------------------------------------
+   DRAWER ARROW
+------------------------------------------------- */
+
 .drawerArrow {
+  position: absolute;
+
+  /*
+    Position the arrow independently from the text.
+    This means it no longer consumes horizontal flex space.
+  */
+  right: 0;
+
+  top: 50%;
+
   display: inline-block;
 
-  margin-left: 20px;
+  margin-left: 0;
 
   color: #ffffff;
 
@@ -420,7 +475,7 @@
 
   opacity: 0;
 
-  transform: translateX(-10px);
+  transform: translateY(-50%) translateX(-10px);
 
   transition:
     opacity 220ms ease,
@@ -430,7 +485,7 @@
 .drawerLink:hover .drawerArrow {
   opacity: 1;
 
-  transform: translateX(0);
+  transform: translateY(-50%) translateX(0);
 }
 
 /* -------------------------------------------------
@@ -718,7 +773,12 @@
   .drawerLink {
     padding: 18px 0;
 
-    font-size: 52px;
+    /*
+      On phones, use the drawer width as the limiting factor
+      rather than the desktop viewport-based sizing.
+    */
+    font-size: clamp(44px, 13vw, 52px);
+
     line-height: 1.08;
   }
 

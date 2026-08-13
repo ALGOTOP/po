@@ -3,18 +3,10 @@ import Link from "next/link";
 import styles from "./HeroReveal.module.css";
 
 type HeroRevealProps = {
-  /** Path to the image in /public, e.g. "/hero-photo.jpg" */
   src?: string;
   alt?: string;
 };
 
-/**
- * Load-in reveal effect:
- * 1. A small centered frame appears.
- * 2. The image wipes into view bottom-to-top inside that frame.
- * 3. The frame smoothly expands to fill the screen.
- * 4. EA fades in after the expansion is complete and functions as the home button.
- */
 export default function HeroReveal({
   src = "/hero-photo.jpg",
   alt = "",
@@ -40,9 +32,16 @@ export default function HeroReveal({
         EA
       </Link>
 
-      <div className={styles.heroRole} aria-label="Romance Ghostwriter">
+      <div
+        className={styles.heroRole}
+        aria-label="Romance Ghostwriter"
+      >
         <span>ROMANCE</span>
         <span>GHOSTWRITER</span>
+      </div>
+
+      <div className={styles.heroName} aria-label="Eman Ali">
+        EMAN ALI
       </div>
     </div>
   );
